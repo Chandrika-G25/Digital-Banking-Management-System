@@ -1,0 +1,119 @@
+import React from 'react';
+import { X, Printer, ShieldCheck } from 'lucide-react';
+import StatusBadge from './StatusBadge';
+
+export default function ReceiptModal({ transaction, onClose }) {
+  if (!transaction) return null;
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal-dialog" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '480px' }}>
+        <div className="modal-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <ShieldCheck size={22} color="var(--blue-600)" />
+            <h3 style={{ fontSize: '1.15rem' }}>Transaction Receipt</h3>
+          </div>
+          <button
+            onClick={onClose}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--slate-400)' }}
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="modal-body" style={{ padding: '1.75rem 1.5rem' }}>
+          {/* Bank Receipt Header */}
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+            <div style={{ fontWeight: 800, fontSize: '1.25rem', color: 'var(--navy-950)', letterSpacing: '-0.02em' }}>
+              SecureBank
+            </div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--slate-500)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Official Electronic Transaction Voucher
+            </div>
+            <div style={{ marginTop: '0.75rem' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--navy-950)' }}>
+                {transaction.transaction_type === 'CASH_DEPOSIT' ? `₹${transaction.amount}` : `$${transaction.amount}`}
+              </div>
+              <div style={{ marginTop: '0.35rem' }}>
+                <StatusBadge status={transaction.status} />
+              </div>
+            </div>
+          </div>
+
+          {/* Details Table */}
+          <div
+            style={{
+              backgroundColor: 'var(--slate-50)',
+              borderRadius: 'var(--radius-md)',
+              padding: '1rem',
+              border: '1px solid var(--slate-200)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem',
+              fontSize: '0.875rem'
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--slate-500)' }}>Reference Number:</span>
+              <span style={{ fontWeight: 700, fontFamily: 'monospace', color: 'var(--navy-900)' }}>
+                {transaction.reference_number}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--slate-500)' }}>Transaction Type:</span>
+              <span style={{ fontWeight: 600, color: 'var(--slate-800)' }}>
+                {transaction.transaction_type === 'CASH_DEPOSIT' ? 'Cash Deposit' : (transaction.transaction_type ? transaction.transaction_type.replace('_', ' ') : 'Transfer')}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--slate-500)' }}>From Source / Counter:</span>
+              <span style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--slate-800)' }}>
+                {transaction.transaction_type === 'CASH_DEPOSIT' ? 'Branch Counter Cash' : (transaction.from_account_masked || transaction.from_account || 'N/A')}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--slate-500)' }}>To Account / Biller:</span>
+              <span style={{ fontWeight: 600, fontFamily: 'monospace', color: 'var(--slate-800)' }}>
+                {transaction.to_account_masked || transaction.to_account || 'N/A'}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--slate-500)' }}>Timestamp:</span>
+              <span style={{ color: 'var(--slate-700)' }}>
+                {new Date(transaction.timestamp).toLocaleString()}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed var(--slate-300)', paddingTop: '0.5rem' }}>
+              <span style={{ color: 'var(--slate-500)' }}>Description:</span>
+              <span style={{ color: 'var(--slate-800)', fontWeight: 500, textAlign: 'right' }}>
+                {transaction.description || 'SecureBank Demo Transfer'}
+              </span>
+            </div>
+          </div>
+
+          <div style={{ marginTop: '1.25rem', textAlign: 'center', fontSize: '0.75rem', color: 'var(--slate-400)' }}>
+            This is an authenticated electronic statement generated by SecureBank System. Demo transactions are simulated and cannot be mistaken for real currency.
+          </div>
+        </div>
+
+        <div className="modal-footer">
+          <button className="btn btn-secondary" onClick={onClose}>
+            Close
+          </button>
+          <button className="btn btn-primary" onClick={handlePrint}>
+            <Printer size={16} /> Print Receipt
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
