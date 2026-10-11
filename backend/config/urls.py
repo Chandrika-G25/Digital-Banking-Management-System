@@ -126,7 +126,18 @@ api_v1_patterns = [
     path('notifications/', NotificationListView.as_view(), name='notifications-list'),
 ]
 
+def root_view(request):
+    return JsonResponse({
+        'name': 'SecureBank Digital Banking Management System API',
+        'status': 'online',
+        'version': '1.0.0',
+        'health_check': '/api/v1/health/',
+        'documentation': 'https://github.com/Chandrika-G25/Digital-Banking-Management-System'
+    })
+
 urlpatterns = [
+    path('', root_view, name='api-root'),
+    path('health/', health_check, name='top-health-check'),
     path('admin/', admin.site.urls),
     path('api/v1/', include(api_v1_patterns)),
 ]
